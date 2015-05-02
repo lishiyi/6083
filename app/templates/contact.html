@@ -1,0 +1,14 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="jumbo">
+    <h2>Profile<h2>
+    <h3>This is the contact page<h3>
+	<p>For more information, please send e-mail to shiyi.li@nyu.edu . </p>
+  </div>
+<hr>
+{% for post in posts %}
+    {% include 'post.html' %}
+{% endfor %}
+{% endblock %}

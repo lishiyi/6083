@@ -106,17 +106,20 @@ def login():
 '''	
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-  form = LoginForm()
-   
-  if request.method == 'POST':
-    if form.validate() == False:
-      return render_template('login.html', form=form)
-    else:
-      session['user_name'] = form.user_name.data
-      return redirect(url_for('profile'))
-                 
-  elif request.method == 'GET':
-    return render_template('login.html', form=form)		
+	form = LoginForm()
+
+	if request.method == 'POST':
+		if form.validate() == False:
+			flash ("Invalid username or password.")
+			return render_template('login.html', form=form)
+		else:
+			session['user_name'] = form.user_name.data
+			flash('You were successfully logged in')
+			return redirect(url_for('profile'))
+
+	elif request.method == 'GET':
+		return render_template('login.html', form=form)		
+
 
 
 
@@ -175,11 +178,11 @@ def index():
     user = g.user
     posts = [
         {
-            'author': { 'user_name': 'John' },
+            'author': { 'user_name': 'Lina' },
             'body': 'Beautiful day in New York University!'
         },
         {
-            'author': { 'user_name': 'Susan' },
+            'author': { 'user_name': 'Kimi' },
             'body': 'The Avengers movie was so cool!'
         }
     ]
@@ -199,11 +202,11 @@ def signout():
 
 @app.route('/about')
 def about():
-	return render_template('login.html')
+	return render_template('about.html')
 	
 @app.route('/contact')
 def contact():
-	return render_template('login.html')	  
+	return render_template('contact.html')	  
 '''
 @app.route('/logout')
 @login_required

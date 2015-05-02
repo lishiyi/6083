@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Hi, {{ session['user_name'] }}!</h1>
+
+{% if session['user_name'] %}
+<h1>Hi {{ session['user_name'] }}!</h1>
+{% else %}
+<h1>Welcome to Tourini!</h1>
+<h3>Join us for fun~~</h3>
+{% endif %}
+
 {% for post in posts %}
 <div><p>{{post.author.user_name}} says: <b>{{post.body}}</b></p></div>
 {% endfor %}
