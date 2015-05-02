@@ -1,31 +1,53 @@
 from app import db
-from hashlib import md5
+from flask.ext.sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+#from hashlib import md5
 #import hashlib
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
 class User(db.Model):
+	
+	__tablename__ = 'user2'
+	user_id = db.Column(db.Integer, primary_key = True)
+	user_name = db.Column(db.String(45), unique=True)
+	password = db.Column(db.String(45))
+	
+	
+	def __init__(self, user_name, password):
+		
+		self.user_name = user_name.title()
+		self.password = password.title()
+	
+	def check_password(self, password):
+		return password == self.password
+	
+		
+	def is_authenticated(self):
+		return True
+
+	def is_active(self):
+		return True
+
+	def is_anonymous(self):
+		return False
+
+	def get_id(self):
+		return unicode(self.user_id)
+
+	def __repr__(self):
+		return '<User %r>' % (self.user_name)
+'''
     id = db.Column(db.Integer, primary_key = True)
     nickname = db.Column(db.String(64), unique = True)
     email = db.Column(db.String(120), unique = True)
     role = db.Column(db.SmallInteger, default = ROLE_USER)
     posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')
+'''
 
-    def is_authenticated(self):
-        return True
 
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return unicode(self.id)
-
-    def __repr__(self):
-        return '<User %r>' % (self.nickname)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)

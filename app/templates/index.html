@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Hi, {{user.nickname}}!</h1>
+<h1>Hi, {{ session['user_name'] }}!</h1>
 {% for post in posts %}
-<div><p>{{post.author.nickname}} says: <b>{{post.body}}</b></p></div>
+<div><p>{{post.author.user_name}} says: <b>{{post.body}}</b></p></div>
 {% endfor %}
 {% endblock %}

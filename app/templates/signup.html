@@ -1,8 +1,7 @@
-<!-- extend base layout -->
 {% extends "base.html" %}
  
 {% block content %}
-  <h2>Sign In</h2>
+  <h2>Sign up</h2>
  
   {% for message in form.user_name.errors %}
     <div class="flash">{{ message }}</div>
@@ -12,11 +11,11 @@
     <div class="flash">{{ message }}</div>
   {% endfor %}
    
-  <form action="{{ url_for('login') }}" method=post>
+  <form action="{{ url_for('signup') }}" method=post>
     {{ form.hidden_tag() }}
      
     {{ form.user_name.label }}
-    {{ form.user_name }}
+    {{ form.user_name }}         
      
     {{ form.password.label }}
     {{ form.password }}
