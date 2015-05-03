@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50623
 File Encoding         : 65001
 
-Date: 2015-05-03 17:54:06
+Date: 2015-05-03 19:43:02
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -41,15 +41,18 @@ CREATE TABLE `user2` (
   `user_id` int(8) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
+  `location` varchar(45) DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `about_me` text,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user2
 -- ----------------------------
-INSERT INTO `user2` VALUES ('1', 'hala111', 'hala111');
-INSERT INTO `user2` VALUES ('2', 'lina222', 'lina222');
-INSERT INTO `user2` VALUES ('3', 'Dora333', 'Dora333');
-INSERT INTO `user2` VALUES ('4', 'Kimi444', 'Kimi444');
-INSERT INTO `user2` VALUES ('5', 'Koko555', 'Koko555');
-INSERT INTO `user2` VALUES ('6', 'Kaka666', 'Kaka666');
+INSERT INTO `user2` VALUES ('1', 'hala111', 'hala111', 'New York City, US', null, null);
+INSERT INTO `user2` VALUES ('2', 'lina222', 'lina222', 'Beijing, China', null, null);
+INSERT INTO `user2` VALUES ('3', 'Dora333', 'dora333', null, null, null);
+INSERT INTO `user2` VALUES ('4', 'Kimi444', 'kimi444', 'Tokyo, Japan', null, null);
+INSERT INTO `user2` VALUES ('5', 'Koko555', 'koko555', null, null, null);
+INSERT INTO `user2` VALUES ('6', 'Kaka666', 'kaka666', null, null, null);

@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from forms import LoginForm, SignupForm
+from forms import LoginForm, SignupForm, EditProfileForm
 from models import User, ROLE_USER, ROLE_ADMIN, db
 ######ADDED########################################
 from flaskext.mysql import MySQL
@@ -51,20 +51,7 @@ def signup():
 	elif request.method == 'GET':
 		return render_template('signup.html', form=form)
 
-#####################################	
-@app.route('/profile')
-def profile():
- 
-  if 'user_name' not in session:
-    return redirect(url_for('login'))
- 
-  user = User.query.filter_by( user_name = session['user_name'] ).first()
- 
-  if user is None:
-    return redirect(url_for('login'))
-  else:
-    return render_template('profile.html')	
-#####################################	
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -116,15 +103,46 @@ def user(user_name):
 	user = g.user
 	if user == None:
 		flash('User ' + user_name + ' not found.')
-		return redirect(url_for('index'))
-	posts = [
-		{ 'author': user, 'body': 'Test post #1' },
-		{ 'author': user, 'body': 'Test post #2' }
-	]
+		return redirect(url_for('login'))
+
 	return render_template('profile.html',
-		user = user,
-		posts = posts)
-	
+		user = user)
+#####################################	
+@app.route('/profile')
+@login_required
+def profile():
+  user = g.user
+  if 'user_name' not in session:
+    return redirect(url_for('login'))
+ 
+  #user = User.query.filter_by( user_name = session['user_name'] ).first()
+ 
+  if user is None:
+    flash('User ' + user_name + ' not found.')
+    return redirect(url_for('login'))
+
+  else:
+    return render_template('profile.html',
+		user = user)	
+		
+@app.route('/edit-profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+	form = EditProfileForm()
+	if form.validate_on_submit():
+		current_user.name = form.name.data
+		current_user.location = form.location.data
+		current_user.about_me = form.about_me.data
+		db.session.add(user)
+		db.session.commit()
+		flash('Your profile has been updated.')
+		return redirect(url_for('.user', user_name=current_user.user_name))
+	form.name.data = current_user.name
+	form.location.data = current_user.location
+	form.about_me.data = current_user.about_me
+	return render_template('edit_profile.html', form=form)
+		
+#####################################	
 ###############################	
 @app.before_request
 def before_request():

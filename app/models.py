@@ -23,6 +23,9 @@ class User(db.Model):
 	user_id = db.Column(db.Integer, primary_key = True)
 	user_name = db.Column(db.String(45), unique=True)
 	password = db.Column(db.String(45))
+	location = db.Column(db.String(45))
+	name = db.Column(db.String(45))
+	about_me = db.Column(db.Text())
 	
 	followed = db.relationship('Follow',
 								foreign_keys=[Follow.follower_id],

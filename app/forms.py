@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, validators
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, validators, TextAreaField
 from wtforms.validators import Required, Email
 
 #from flask.ext.wtf import Form, TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField
@@ -44,3 +44,9 @@ class SignupForm(Form):
 			return False
 		else:
 			return True	
+			
+class EditProfileForm(Form):
+	name = StringField('Real name')
+	location = StringField('Location')
+	about_me = TextAreaField('About me')
+	submit = SubmitField('Submit')

@@ -5,9 +5,30 @@
   <div class="jumbo">
     <h1>Profile<h1>
     <h2>This is {{ session['user_name'] }}'s profile page<h2>
+	
+	<p>
+		{% if user.user_name %}{{ user.user_name }}{% endif %}
+		{% if user.location %}
+			From <a href="http://maps.google.com/?q={{ user.location }}">
+				{{ user.location }}
+			</a>
+		{% endif %}
+		{% if user == current_user %}
+			<a class="btn btn-default" href="{{ url_for('.edit_profile') }}">
+				Edit Profile
+			</a>
+		{% endif %}
+	</p>
+	
   </div>
 <hr>
+
+{# 
 {% for post in posts %}
     {% include 'post.html' %}
-{% endfor %}
+{% endfor %}  -->
+#}
+
 {% endblock %}
+
+
