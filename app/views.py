@@ -11,7 +11,7 @@ import requests
 mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = 'devuser'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'devpwd'
-app.config['MYSQL_DATABASE_DB'] = 'tourini'
+app.config['MYSQL_DATABASE_DB'] = 'tourini2'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
@@ -47,7 +47,6 @@ def signup():
 			session['user_name'] = newuser.user_name
 			flash('User successfully registered')
 			return redirect(url_for('login'))
-			#return "[1] Create a new user [2] sign in the user [3] redirect to the user's profile"
 
 	elif request.method == 'GET':
 		return render_template('signup.html', form=form)
@@ -77,6 +76,8 @@ def login():
 			return render_template('login.html', form=form)
 		else:
 			session['user_name'] = form.user_name.data
+			user = User.query.filter_by( user_name = form.user_name.data).first()
+			login_user(user)
 			flash('You were successfully logged in')
 			return redirect(url_for('profile'))
 
@@ -111,19 +112,20 @@ def load_user(user_id):
 @app.route('/user/<user_name>')
 @login_required
 def user(user_name):
-    user = User.query.filter_by(user_name = user_name).first()
-    if user == None:
-        flash('User ' + user_name + ' not found.')
-        return redirect(url_for('index'))
-    posts = [
-        { 'author': user, 'body': 'Test post #1' },
-        { 'author': user, 'body': 'Test post #2' }
-    ]
-    return render_template('profile.html',
-        user = user,
-        posts = posts)
+    #user = User.query.filter_by(user_name = user_name).first()
+	user = g.user
+	if user == None:
+		flash('User ' + user_name + ' not found.')
+		return redirect(url_for('index'))
+	posts = [
+		{ 'author': user, 'body': 'Test post #1' },
+		{ 'author': user, 'body': 'Test post #2' }
+	]
+	return render_template('profile.html',
+		user = user,
+		posts = posts)
 	
-#	
+###############################	
 @app.before_request
 def before_request():
     g.user = current_user
@@ -156,6 +158,8 @@ def signout():
     return redirect(url_for('login'))
      
   session.pop('user_name', None)
+  logout_user()
+  flash('You have been logged out.')
   return redirect(url_for('index'))
 
 @app.route('/about')
@@ -165,11 +169,3 @@ def about():
 @app.route('/contact')
 def contact():
 	return render_template('contact.html')	  
-'''
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-	#flash('You have been logged out.')
-    return redirect(url_for('index'))
-'''
