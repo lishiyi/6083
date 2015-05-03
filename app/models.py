@@ -1,5 +1,6 @@
 from app import db
 from flask.ext.sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 #from hashlib import md5
@@ -8,6 +9,14 @@ db = SQLAlchemy()
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
+class Follow(db.Model):
+	__tablename__ = 'follows2'
+	follower_id = db.Column(db.Integer, db.ForeignKey('user2.user_id'),
+	primary_key=True)
+	followed_id = db.Column(db.Integer, db.ForeignKey('user2.user_id'),
+	primary_key=True)
+	timestamp = db.Column(db.DateTime, default = datetime.utcnow)
+
 class User(db.Model):
 	
 	__tablename__ = 'user2'
@@ -15,7 +24,17 @@ class User(db.Model):
 	user_name = db.Column(db.String(45), unique=True)
 	password = db.Column(db.String(45))
 	
-	
+	followed = db.relationship('Follow',
+								foreign_keys=[Follow.follower_id],
+								backref=db.backref('follower', lazy='joined'),
+								lazy='dynamic',
+								cascade='all, delete-orphan')
+	followers = db.relationship('Follow',
+								foreign_keys=[Follow.followed_id],
+								backref=db.backref('followed', lazy='joined'),
+								lazy='dynamic',
+								cascade='all, delete-orphan')
+								
 	def __init__(self, user_name, password):
 		
 		self.user_name = user_name.title()
@@ -39,15 +58,23 @@ class User(db.Model):
 
 	def __repr__(self):
 		return '<User %r>' % (self.user_name)
-'''
-    id = db.Column(db.Integer, primary_key = True)
-    nickname = db.Column(db.String(64), unique = True)
-    email = db.Column(db.String(120), unique = True)
-    role = db.Column(db.SmallInteger, default = ROLE_USER)
-    posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')
-'''
-
-
+		
+	def follow(self, user):
+		if not self.is_following(user):
+			f = Follow(follower=self, followed=user)
+			db.session.add(f)
+			
+	def unfollow(self, user):
+		f = self.followed.filter_by(followed_id=user.user_id).first()
+		if f:
+			db.session.delete(f)
+			
+	def is_following(self, user):
+		return self.followed.filter_by(
+			followed_id = user.use_id).first() is not None
+	def is_followed_by(self, user):
+		return self.followers.filter_by(
+			follower_id = user.user_id).first() is not None
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)

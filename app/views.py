@@ -66,53 +66,7 @@ def profile():
   else:
     return render_template('profile.html')	
 #####################################	
-'''
-#login 
-@app.route('/login', methods = ['GET', 'POST'])
-@oid.loginhandler
-def login():
-    if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for = ['user_name', 'email'])
-    return render_template('login.html',
-        title = 'Sign In',
-        form = form,
-        providers = app.config['OPENID_PROVIDERS'])
 
-@app.route('/login1', methods=['GET', 'POST'])
-def login():
-	form = LoginForm()
-	if form.validate_on_submit():
-		user = User.query.filter_by(email=form.email.data).first()
-		if user is not None and user.verify_password(form.password.data):
-			login_user(user, form.remember_me.data)
-			return redirect(request.args.get('next') or url_for('index'))
-		flash('Invalid username or password.')
-	return render_template('login.html', form=form)
-'''
-'''	
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-	form = LoginForm()
-	if form.validate_on_submit():
-		user = User.query.filter_by( user_name = form.user_name.data ).first()
-		user_name = form.user_name.data
-		password = form.password.data
-		cursor = mysql.connect().cursor()
-		cursor.execute("SELECT * from user2 where user_name='" + user_name + "' and password='" + password + "';")
-		data = cursor.fetchone()
-		if data is None:
-			flash ("Invalid username or password.")
-			return redirect(url_for('login'))
-		else:
-			flash('You were successfully logged in')
-			login_user(user, form.remember_me.data)
-			return redirect(url_for('index'))
-	return render_template('login.html', form=form)
-'''	
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	form = LoginForm()
@@ -128,13 +82,8 @@ def login():
 
 	elif request.method == 'GET':
 		return render_template('login.html', form=form)		
-
-
-
-
 		
 #After Login
-#@oid.after_login
 def after_login(resp):
     if resp.email is None or resp.email == "":
         flash('Invalid login. Please try again.')
@@ -154,7 +103,7 @@ def after_login(resp):
     login_user(user, remember = remember_me)
     return redirect(request.args.get('next') or url_for('index'))
 
-#	
+####################################################	
 @lm.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -192,7 +141,7 @@ def index():
         },
         {
             'author': { 'user_name': 'Kimi' },
-            'body': 'The Avengers movie was so cool!'
+            'body': 'The Great Wall is so cool!'
         }
     ]
     return render_template('index.html',
