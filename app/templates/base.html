@@ -1,35 +1,39 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Tourini</title>
+    <link href="{{ url_for('static', filename='css/shift.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
   </head>
   <body>
  
   <header>
-    <div class="container">
-      <h1 class="logo">Tourini</h1>
-      <nav>
-        <ul class="menu">
+      <div class="nav">
+	    <div class="container">
+        <ul class="pull-left">		
           <li><a href="{{ url_for('index') }}">Home</a></li>
           <li><a href="{{ url_for('about') }}">About</a></li>
           <li><a href="{{ url_for('contact') }}">Contact</a></li>
-          {% if 'user_name' in session %}
+        </ul>
+		<ul class="pull-right">
+		  {% if 'user_name' in session %}
           <li><a href="{{ url_for('profile') }}">Profile</a></li>
           <li><a href="{{ url_for('signout') }}">Sign Out</a></li>
           {% else %}
           <li><a href="{{ url_for('signup') }}">Sign Up</a></li>
           <li><a href="{{ url_for('login') }}">Log In</a></li>
           {% endif %}
+		 </ul>
         </ul>
-      </nav>
+      </div>
     </div>
   </header>
- 
-    <div class="container">
-      {% block content %}
-      {% endblock %}
-    </div>
+	<div class="jumbotron">
+		<div class="container">
+		  {% block content %}
+		  {% endblock %}
+		</div>
+	</div>
  
   </body>
 </html>

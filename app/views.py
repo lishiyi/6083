@@ -21,7 +21,16 @@ def testdb():
     return 'It works.'
   else:
     return 'Something is broken.'
-	
+
+@app.errorhandler(404)
+def internal_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
 	form = SignupForm()
@@ -151,7 +160,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 ############################################################################
 @app.route('/user/<user_name>')
-#@login_required
+@login_required
 def user(user_name):
     user = User.query.filter_by(user_name = user_name).first()
     if user == None:
@@ -161,7 +170,7 @@ def user(user_name):
         { 'author': user, 'body': 'Test post #1' },
         { 'author': user, 'body': 'Test post #2' }
     ]
-    return render_template('user.html',
+    return render_template('profile.html',
         user = user,
         posts = posts)
 	
