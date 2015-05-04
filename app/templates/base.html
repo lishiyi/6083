@@ -4,10 +4,15 @@
     <link href="{{ url_for('static', filename='css/shift.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <script src="/static/js/jquery.min.js"></script>
+	<script src="/static/js/script.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
  
   <header>
+		
+		
       <div class="nav">
 	    <div class="container">
         <ul class="pull-left">		
@@ -34,6 +39,15 @@
 		  {% endblock %}
 		</div>
 	</div>
- 
+	
+	<div class="new">
+			<div class="panel">
+			<br />
+			<br />
+            <p>Do you know?</p>
+			</div>
+        <p class="slide"><div class="pull-me">What's New?</div></p>
+		</div>
+	
   </body>
 </html>
