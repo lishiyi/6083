@@ -5,7 +5,7 @@
   <div class="jumbo">
     <h1>Profile<h1>
     <h2>This is {{ session['user_name'] }}'s profile page<h2>
-	
+	<hr>
 	<p>
 		{% if user.user_name %}{{ user.user_name }}{% endif %}
 		{% if user.location %}
@@ -20,8 +20,13 @@
 		{% endif %}
 	</p>
 	
+	<h2>About Me<h2>
+	{% if user.about_me %}
+	<p>{{ user.about_me }}  </p>
+	{% endif %}
+	
   </div>
-<hr>
+
 
 {# 
 {% for post in posts %}

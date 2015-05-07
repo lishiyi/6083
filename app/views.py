@@ -130,13 +130,13 @@ def profile():
 def edit_profile():
 	form = EditProfileForm()
 	if form.validate_on_submit():
-		current_user.name = form.name.data
-		current_user.location = form.location.data
-		current_user.about_me = form.about_me.data
-		db.session.add(user)
+		g.user.name = form.name.data
+		g.user.location = form.location.data
+		g.user.about_me = form.about_me.data
+		db.session.add(g.user)
 		db.session.commit()
 		flash('Your profile has been updated.')
-		return redirect(url_for('.user', user_name=current_user.user_name))
+		return redirect(url_for('.user', user_name= g.user.user_name))
 	form.name.data = current_user.name
 	form.location.data = current_user.location
 	form.about_me.data = current_user.about_me

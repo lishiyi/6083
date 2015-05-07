@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50623
 File Encoding         : 65001
 
-Date: 2015-05-03 19:43:02
+Date: 2015-05-06 22:17:33
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -51,7 +51,7 @@ CREATE TABLE `user2` (
 -- Records of user2
 -- ----------------------------
 INSERT INTO `user2` VALUES ('1', 'hala111', 'hala111', 'New York City, US', null, null);
-INSERT INTO `user2` VALUES ('2', 'lina222', 'lina222', 'Beijing, China', null, null);
+INSERT INTO `user2` VALUES ('2', 'lina222', 'lina222', 'Beijing, China', 'lina', 'hahahahah');
 INSERT INTO `user2` VALUES ('3', 'Dora333', 'dora333', null, null, null);
 INSERT INTO `user2` VALUES ('4', 'Kimi444', 'kimi444', 'Tokyo, Japan', null, null);
 INSERT INTO `user2` VALUES ('5', 'Koko555', 'koko555', null, null, null);
