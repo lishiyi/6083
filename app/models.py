@@ -15,6 +15,7 @@ class Post(db.Model):
 	body = db.Column(db.Text)
 	timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 	user_name = db.Column(db.String(45))
+	url = db.Column(db.String(45))
 
 
 class Follow(db.Model):
@@ -45,14 +46,17 @@ class User(db.Model):
 								backref=db.backref('followed', lazy='joined'),
 								lazy='dynamic',
 								cascade='all, delete-orphan')
-								
+	
 	def __init__(self, user_name, password, location, name, about_me):
 		
 		self.user_name = user_name.title()
 		self.password = password.title()
-		self.location = location.title()
-		self.name = name.title()
-		self.about_me = about_me.title()
+		if location:
+			self.location = location.title()
+		if name:
+			self.name = name.title()
+		if about_me:
+			self.about_me = about_me.title()
 	
 	def check_password(self, password):
 		return password == self.password

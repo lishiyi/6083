@@ -1,12 +1,12 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, validators, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, validators, TextAreaField, FileField
 from wtforms.validators import Required, Email
 
-#from flask.ext.wtf import Form, TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField
 from models import db, User
 
 
 class PostForm(Form):
+	file = FileField('Image File')
 	body = TextAreaField("What's on your mind?", validators=[Required()])
 	submit = SubmitField('Submit')
 

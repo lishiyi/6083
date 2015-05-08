@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50623
 File Encoding         : 65001
 
-Date: 2015-05-07 22:30:22
+Date: 2015-05-08 19:38:05
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -42,13 +42,21 @@ CREATE TABLE `posts` (
   `body` text,
   `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
   `user_name` varchar(45) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of posts
 -- ----------------------------
-INSERT INTO `posts` VALUES ('1', 'I am happy', '2015-05-08 02:29:43', 'lina222');
+INSERT INTO `posts` VALUES ('1', 'I am happy', '2015-05-08 02:29:43', 'lina222', null);
+INSERT INTO `posts` VALUES ('2', 'yeeeeeel', '2015-05-08 20:48:32', 'lina222', null);
+INSERT INTO `posts` VALUES ('3', 'sadadad', '2015-05-08 21:03:25', 'lina222', null);
+INSERT INTO `posts` VALUES ('4', 'aaaa', '2015-05-08 21:04:36', 'lina222', null);
+INSERT INTO `posts` VALUES ('5', 'sssssss', '2015-05-08 22:15:11', 'lina222', null);
+INSERT INTO `posts` VALUES ('6', 'asa', '2015-05-08 23:00:08', 'Kimi444', null);
+INSERT INTO `posts` VALUES ('7', 'imaaaaaa', '2015-05-08 23:01:04', 'Kimi444', null);
+INSERT INTO `posts` VALUES ('11', '2222', '2015-05-08 23:35:42', 'Bibi777', 'uploads/Bibi777/2.jpg');
 
 -- ----------------------------
 -- Table structure for user2
@@ -62,14 +70,16 @@ CREATE TABLE `user2` (
   `name` varchar(45) DEFAULT NULL,
   `about_me` text,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of user2
 -- ----------------------------
 INSERT INTO `user2` VALUES ('1', 'hala111', 'hala111', 'New York City, US', null, null);
 INSERT INTO `user2` VALUES ('2', 'lina222', 'lina222', 'Beijing, China', 'lina', 'hahahahah');
-INSERT INTO `user2` VALUES ('3', 'Dora333', 'dora333', null, null, null);
-INSERT INTO `user2` VALUES ('4', 'Kimi444', 'kimi444', 'Tokyo, Japan', null, null);
-INSERT INTO `user2` VALUES ('5', 'Koko555', 'koko555', null, null, null);
-INSERT INTO `user2` VALUES ('6', 'Kaka666', 'kaka666', null, null, null);
+INSERT INTO `user2` VALUES ('3', 'dora333', 'dora333', null, null, null);
+INSERT INTO `user2` VALUES ('4', 'kimi444', 'kimi444', 'Tokyo, Japan', null, null);
+INSERT INTO `user2` VALUES ('5', 'koko555', 'koko555', null, null, null);
+INSERT INTO `user2` VALUES ('6', 'kaka666', 'kaka666', null, null, null);
+INSERT INTO `user2` VALUES ('7', 'Bibi777', 'Bibi777', null, null, null);
+INSERT INTO `user2` VALUES ('8', 'Wuqi888', 'Wuqi888', null, null, null);
