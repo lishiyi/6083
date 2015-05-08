@@ -5,6 +5,11 @@ from wtforms.validators import Required, Email
 #from flask.ext.wtf import Form, TextField, TextAreaField, SubmitField, validators, ValidationError, PasswordField
 from models import db, User
 
+
+class PostForm(Form):
+	body = TextAreaField("What's on your mind?", validators=[Required()])
+	submit = SubmitField('Submit')
+
 class LoginForm(Form):
 	user_name = StringField("User Name",  [validators.Required("Please enter your user name.")])
 	password = PasswordField('Password', [validators.Required("Please enter a password.")])

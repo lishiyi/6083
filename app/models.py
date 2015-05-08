@@ -9,6 +9,14 @@ db = SQLAlchemy()
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
+class Post(db.Model):
+	__tablename__ = 'posts'
+	id = db.Column(db.Integer, primary_key=True)
+	body = db.Column(db.Text)
+	timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+	user_name = db.Column(db.String(45))
+
+
 class Follow(db.Model):
 	__tablename__ = 'follows2'
 	follower_id = db.Column(db.Integer, db.ForeignKey('user2.user_id'),
@@ -81,12 +89,3 @@ class User(db.Model):
 	def is_followed_by(self, user):
 		return self.followers.filter_by(
 			follower_id = user.user_id).first() is not None
-
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    body = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return '<Post %r>' % (self.body)

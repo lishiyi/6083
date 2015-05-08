@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50623
 File Encoding         : 65001
 
-Date: 2015-05-06 22:17:33
+Date: 2015-05-07 22:30:22
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -34,11 +34,28 @@ CREATE TABLE `follows2` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for posts
+-- ----------------------------
+DROP TABLE IF EXISTS `posts`;
+CREATE TABLE `posts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `body` text,
+  `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
+  `user_name` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of posts
+-- ----------------------------
+INSERT INTO `posts` VALUES ('1', 'I am happy', '2015-05-08 02:29:43', 'lina222');
+
+-- ----------------------------
 -- Table structure for user2
 -- ----------------------------
 DROP TABLE IF EXISTS `user2`;
 CREATE TABLE `user2` (
-  `user_id` int(8) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   `location` varchar(45) DEFAULT NULL,

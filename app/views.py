@@ -1,8 +1,8 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from forms import LoginForm, SignupForm, EditProfileForm
-from models import User, ROLE_USER, ROLE_ADMIN, db
+from forms import LoginForm, SignupForm, EditProfileForm, PostForm
+from models import Post, Follow, User, ROLE_USER, ROLE_ADMIN, db
 ######ADDED########################################
 from flaskext.mysql import MySQL
 import requests
@@ -149,25 +149,20 @@ def before_request():
     g.user = current_user
 		
 ############################################################################		
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 #@login_required
 def index():
-    user = g.user
-    posts = [
-        {
-            'author': { 'user_name': 'Lina' },
-            'body': 'Beautiful day in New York University!'
-        },
-        {
-            'author': { 'user_name': 'Kimi' },
-            'body': 'The Great Wall is so cool!'
-        }
-    ]
-    return render_template('index.html',
-        title = 'Home',
-        user = user,
-        posts = posts)
+	user = g.user
+	form = PostForm()
+	if form.validate_on_submit():
+		post = Post(body=form.body.data, user_name= current_user.user_name )
+		db.session.add(post)
+		db.session.commit()
+		return redirect(url_for('.index'))
+	posts = Post.query.order_by(Post.timestamp.desc()).all()
+	return render_template('index.html', form=form, title = 'Home', user = user, posts=posts)
+
 #######################################################		
 @app.route('/signout')
 def signout():
