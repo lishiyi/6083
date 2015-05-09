@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Flasky - {{ title }} {{ user.user_namename }}{% endblock %}
+
+{% block page_content %}
+<div class="jumbo">
+
+<div class="page-header">
+    <h1>{{ title }} {{ user.user_name }}</h1>
+</div>
+<table class="table table-hover followers">
+    <thead><tr><th>User</th><th>Since</th></tr></thead>
+    {% for follow in follows %}
+    {% if follow.user != user %}
+    <tr>
+        <td>
+            <a href="{{ url_for('.user', user_name = follow.user.user_name) }}">
+                {{ follow.user.user_name }}
+            </a>
+        </td>
+        <td>{{ moment(follow.timestamp).format('L') }}</td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+</table>
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, endpoint, user_name = user.user_name) }}
+</div>
+
+</div>
+{% endblock %}

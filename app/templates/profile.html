@@ -3,8 +3,32 @@
 
 {% block content %}
   <div class="jumbo">
-    <h1>Profile<h1>
-    <h2>This is {{ session['user_name'] }}'s profile page<h2>
+    <h1>{{ user.user_name }}<h1>
+	
+	{% if user != current_user %}
+		{% if not current_user.is_following(user) %}
+		<a href="{{ url_for('.follow', user_name=user.user_name) }}"
+			class="btn btn-primary">Follow</a>
+		{% else %}
+		<a href="{{ url_for('.unfollow', user_name=user.user_name) }}"
+			class="btn btn-default">Unfollow</a>
+		{% endif %}
+	{% endif %}
+
+	<a href="{{ url_for('.followers', user_name=user.user_name) }}">
+		Followers: <span class="badge">{{ user.followers.count() }}</span>
+	</a>
+	
+	<a href="{{ url_for('.followed_by', user_name=user.user_name) }}">
+		Following: <span class="badge">{{ user.followed.count() }}</span>
+	</a>
+	
+	
+	{% if current_user.is_authenticated() and user != current_user and
+		user.is_following(current_user) %}
+	| <span class="label label-default">Follows you</span>
+	{% endif %}
+
 	<hr>
 	<p>
 		{% if user.user_name %}{{ user.user_name }}{% endif %}
@@ -27,6 +51,7 @@
 	
   </div>
 
+  
 
 {# 
 {% for post in posts %}

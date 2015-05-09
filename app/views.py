@@ -1,6 +1,6 @@
 import os
 from flask import render_template, flash, redirect, session, url_for, request, g, send_from_directory
-from flask.ext.login import login_user, logout_user, current_user, login_required
+from flask.ext.login import login_user, logout_user, current_user, login_required, current_app
 from app import app, db, lm
 from forms import LoginForm, SignupForm, EditProfileForm, PostForm
 from models import Post, Follow, User, ROLE_USER, ROLE_ADMIN, db
@@ -17,12 +17,72 @@ app.config['MYSQL_DATABASE_DB'] = 'tourini2'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
-
+app.config['FLASKY_FOLLOWERS_PER_PAGE'] = 20
 # This is the path to the upload directory
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg', 'gif'])
 
+@app.route('/follow/<user_name>')
+@login_required
+def follow(user_name):
+	user = User.query.filter_by(user_name=user_name).first()
+	if user is None:
+		flash('Invalid user.')
+		return redirect(url_for('.index'))
+	if current_user.is_following(user):
+		flash('You are already following this user.')
+		return redirect(url_for('.user', user_name=user_name))
+	current_user.follow(user)
+	flash('You are now following %s.' % user_name)
+	return redirect(url_for('.user', user_name=user_name))
+	
+@app.route('/unfollow/<user_name>')
+@login_required
+def unfollow(user_name):
+	user = User.query.filter_by(user_name=user_name).first()
+	if user is None:
+		flash('Invalid user.')
+		return redirect(url_for('.index'))
+	if not current_user.is_following(user):
+		flash('You are not following this user.')
+		return redirect(url_for('.user', user_name=user_name))
+	current_user.unfollow(user)
+	flash('You have unfollowed %s.' % user_name)
+	return redirect(url_for('.user', user_name=user_name))
+
+@app.route('/followers/<user_name>')
+def followers(user_name):
+	user = User.query.filter_by(user_name=user_name).first()
+	if user is None:
+		flash('Invalid user.')
+		return redirect(url_for('.index'))
+	page = request.args.get('page', 1, type=int)
+	pagination = user.followers.paginate(
+		page, per_page= current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+		error_out=False)
+	follows = [{'user': item.follower, 'timestamp': item.timestamp}
+				for item in pagination.items]
+	return render_template('followers.html', user=user, title="Followers of",
+							endpoint='.followers', pagination=pagination,
+							follows=follows)
+	
+@app.route('/followed-by/<user_name>')
+def followed_by(user_name):
+    user = User.query.filter_by(user_name=user_name).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followed.paginate(
+        page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+        error_out=False)
+    follows = [{'user': item.followed, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Followed by",
+                           endpoint='.followed_by', pagination=pagination,
+                           follows=follows)
+							
 # For a given file, return whether it's an allowed type or not
 def allowed_file(filename):
     return '.' in filename and \
@@ -153,23 +213,19 @@ def load_user(user_id):
 @app.route('/user/<user_name>')
 @login_required
 def user(user_name):
-    #user = User.query.filter_by(user_name = user_name).first()
-	user = g.user
+	user = User.query.filter_by(user_name = user_name).first()
 	if user == None:
 		flash('User ' + user_name + ' not found.')
 		return redirect(url_for('login'))
-
 	return render_template('profile.html',
 		user = user)
 #####################################	
 @app.route('/profile')
 @login_required
 def profile():
-  user = g.user
+  user = User.query.filter_by( user_name = session['user_name'] ).first()
   if 'user_name' not in session:
     return redirect(url_for('login'))
- 
-  #user = User.query.filter_by( user_name = session['user_name'] ).first()
  
   if user is None:
     flash('User ' + user_name + ' not found.')

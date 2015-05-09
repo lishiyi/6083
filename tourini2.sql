@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50623
 File Encoding         : 65001
 
-Date: 2015-05-08 19:38:05
+Date: 2015-05-08 21:09:50
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -32,6 +32,10 @@ CREATE TABLE `follows2` (
 -- ----------------------------
 -- Records of follows2
 -- ----------------------------
+INSERT INTO `follows2` VALUES ('3', '2', '2015-05-09 00:55:33');
+INSERT INTO `follows2` VALUES ('6', '2', '2015-05-09 00:53:43');
+INSERT INTO `follows2` VALUES ('7', '2', '2015-05-09 00:53:05');
+INSERT INTO `follows2` VALUES ('8', '2', '2015-05-09 00:46:24');
 
 -- ----------------------------
 -- Table structure for posts
@@ -77,7 +81,7 @@ CREATE TABLE `user2` (
 -- ----------------------------
 INSERT INTO `user2` VALUES ('1', 'hala111', 'hala111', 'New York City, US', null, null);
 INSERT INTO `user2` VALUES ('2', 'lina222', 'lina222', 'Beijing, China', 'lina', 'hahahahah');
-INSERT INTO `user2` VALUES ('3', 'dora333', 'dora333', null, null, null);
+INSERT INTO `user2` VALUES ('3', 'dora333', 'dora333', 'Newport, NJ', '', 'Yeah');
 INSERT INTO `user2` VALUES ('4', 'kimi444', 'kimi444', 'Tokyo, Japan', null, null);
 INSERT INTO `user2` VALUES ('5', 'koko555', 'koko555', null, null, null);
 INSERT INTO `user2` VALUES ('6', 'kaka666', 'kaka666', null, null, null);

@@ -81,15 +81,17 @@ class User(db.Model):
 		if not self.is_following(user):
 			f = Follow(follower=self, followed=user)
 			db.session.add(f)
+			db.session.commit()
 			
 	def unfollow(self, user):
 		f = self.followed.filter_by(followed_id=user.user_id).first()
 		if f:
 			db.session.delete(f)
+			db.session.commit()
 			
 	def is_following(self, user):
 		return self.followed.filter_by(
-			followed_id = user.use_id).first() is not None
+			followed_id = user.user_id).first() is not None
 	def is_followed_by(self, user):
 		return self.followers.filter_by(
 			follower_id = user.user_id).first() is not None
