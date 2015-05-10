@@ -1,6 +1,8 @@
 from app import db
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
+import bleach
+from markdown import markdown
 
 db = SQLAlchemy()
 #from hashlib import md5
@@ -9,6 +11,27 @@ db = SQLAlchemy()
 ROLE_USER = 0
 ROLE_ADMIN = 1
 
+class Comment(db.Model):
+	__tablename__ = 'comments'
+	id = db.Column(db.Integer, primary_key=True)
+	body = db.Column(db.Text)
+	body_html = db.Column(db.Text)
+	timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+	disabled = db.Column(db.Boolean)
+	author_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
+	post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+	
+	@staticmethod
+	def on_changed_body(target, value, oldvalue, initiator):
+		allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i',
+						'strong']
+		target.body_html = bleach.linkify(bleach.clean(
+			markdown(value, output_format='html'),
+			tags=allowed_tags, strip=True))
+	
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
+
+
 class Post(db.Model):
 	__tablename__ = 'posts'
 	id = db.Column(db.Integer, primary_key=True)
@@ -16,19 +39,32 @@ class Post(db.Model):
 	timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 	user_name = db.Column(db.String(45))
 	url = db.Column(db.String(45))
-
+	#comments = db.relationship('Comment', backref='post', lazy='dynamic')
+	
+	
+	
+	@staticmethod
+	def on_changed_body(target, value, oldvalue, initiator):
+		allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+						'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+						'h1', 'h2', 'h3', 'p']
+		target.body_html = bleach.linkify( bleach.clean(
+			markdown(value, output_format='html'),
+			tags=allowed_tags, strip=True))
+			
+db.event.listen(Post.body, 'set', Post.on_changed_body)
 
 class Follow(db.Model):
-	__tablename__ = 'follows2'
-	follower_id = db.Column(db.Integer, db.ForeignKey('user2.user_id'),
+	__tablename__ = 'follows'
+	follower_id = db.Column(db.Integer, db.ForeignKey('user.user_id'),
 	primary_key=True)
-	followed_id = db.Column(db.Integer, db.ForeignKey('user2.user_id'),
+	followed_id = db.Column(db.Integer, db.ForeignKey('user.user_id'),
 	primary_key=True)
 	timestamp = db.Column(db.DateTime, default = datetime.utcnow)
 
 class User(db.Model):
 	
-	__tablename__ = 'user2'
+	__tablename__ = 'user'
 	user_id = db.Column(db.Integer, primary_key = True)
 	user_name = db.Column(db.String(45), unique=True)
 	password = db.Column(db.String(45))
@@ -36,6 +72,7 @@ class User(db.Model):
 	name = db.Column(db.String(45))
 	about_me = db.Column(db.Text())
 	
+	#posts = db.relationship('Post', backref='author', lazy='dynamic')
 	followed = db.relationship('Follow',
 								foreign_keys=[Follow.follower_id],
 								backref=db.backref('follower', lazy='joined'),
@@ -46,6 +83,7 @@ class User(db.Model):
 								backref=db.backref('followed', lazy='joined'),
 								lazy='dynamic',
 								cascade='all, delete-orphan')
+	#comments = db.relationship('Comment', backref='author', lazy='dynamic')
 	
 	def __init__(self, user_name, password, location, name, about_me):
 		

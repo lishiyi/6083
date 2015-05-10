@@ -4,6 +4,9 @@ from wtforms.validators import Required, Email
 
 from models import db, User
 
+class CommentForm(Form):
+	body = StringField('', validators=[Required()])
+	submit = SubmitField('Submit')
 
 class PostForm(Form):
 	file = FileField('Image File')

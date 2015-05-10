@@ -2,12 +2,13 @@ import os
 from flask import render_template, flash, redirect, session, url_for, request, g, send_from_directory
 from flask.ext.login import login_user, logout_user, current_user, login_required, current_app
 from app import app, db, lm
-from forms import LoginForm, SignupForm, EditProfileForm, PostForm
-from models import Post, Follow, User, ROLE_USER, ROLE_ADMIN, db
+from forms import LoginForm, SignupForm, EditProfileForm, PostForm, CommentForm
+from models import Comment, Post, Follow, User, ROLE_USER, ROLE_ADMIN, db
 from werkzeug import secure_filename
 ######ADDED########################################
 from flaskext.mysql import MySQL
 import requests
+from flask.ext.sqlalchemy import get_debug_queries
 ######ADDED########################################
 #MySQL configuration.
 mysql = MySQL()
@@ -18,10 +19,70 @@ app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
 app.config['FLASKY_FOLLOWERS_PER_PAGE'] = 20
+app.config['FLASKY_COMMENTS_PER_PAGE'] = 20
 # This is the path to the upload directory
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg', 'gif'])
+
+@app.route('/moderate')
+@login_required
+def moderate():
+    page = request.args.get('page', 1, type=int)
+    pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
+        error_out=False)
+    comments = pagination.items
+    return render_template('moderate.html', comments=comments,
+                           pagination=pagination, page=page)
+
+@app.route('/moderate/enable/<int:id>')
+@login_required
+def moderate_enable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = False
+    db.session.add(comment)
+    return redirect(url_for('.moderate',
+                            page=request.args.get('page', 1, type=int)))
+
+
+@app.route('/moderate/disable/<int:id>')
+@login_required
+def moderate_disable(id):
+    comment = Comment.query.get_or_404(id)
+    comment.disabled = True
+    db.session.add(comment)
+    return redirect(url_for('.moderate',
+                            page=request.args.get('page', 1, type=int)))
+
+
+@app.route('/post/<int:id>', methods=['GET', 'POST'])
+def post(id):
+	#foo = Post.query.filter_by(id = id).first()
+	#author = User.query.filter_by(user_name = foo.user_name).first()
+	
+	post = Post.query.get_or_404(id)
+	form = CommentForm()
+	if form.validate_on_submit():
+		comment = Comment(body=form.body.data,
+						  post=post,
+						  author=current_user._get_current_object())
+		db.session.add(comment)
+		db.session.commit()
+		flash('Your comment has been published.')
+		return redirect(url_for('.post', id=post.id, page=-1))
+	page = request.args.get('page', 1, type=int)
+	if page == -1:
+		page = (post.comments.count() - 1) / \
+				current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+	pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
+		page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
+		error_out=False)
+	comments = pagination.items
+	return render_template('post.html', posts=[post], form=form,
+							comments=comments, pagination=pagination)
+
+
 
 @app.route('/follow/<user_name>')
 @login_required
@@ -53,20 +114,21 @@ def unfollow(user_name):
 
 @app.route('/followers/<user_name>')
 def followers(user_name):
-	user = User.query.filter_by(user_name=user_name).first()
-	if user is None:
-		flash('Invalid user.')
-		return redirect(url_for('.index'))
-	page = request.args.get('page', 1, type=int)
-	pagination = user.followers.paginate(
-		page, per_page= current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
-		error_out=False)
-	follows = [{'user': item.follower, 'timestamp': item.timestamp}
-				for item in pagination.items]
-	return render_template('followers.html', user=user, title="Followers of",
-							endpoint='.followers', pagination=pagination,
-							follows=follows)
-	
+    user = User.query.filter_by(user_name=user_name).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followers.paginate(
+        page, per_page=current_app.config['FLASKY_FOLLOWERS_PER_PAGE'],
+        error_out=False)
+    follows = [{'user': item.follower, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Followers of",
+                           endpoint='.followers', pagination=pagination,
+                           follows=follows)
+							
+							
 @app.route('/followed-by/<user_name>')
 def followed_by(user_name):
     user = User.query.filter_by(user_name=user_name).first()
@@ -217,7 +279,7 @@ def user(user_name):
 	if user == None:
 		flash('User ' + user_name + ' not found.')
 		return redirect(url_for('login'))
-	return render_template('profile.html',
+	return render_template('user.html',
 		user = user)
 #####################################	
 @app.route('/profile')
@@ -232,7 +294,7 @@ def profile():
     return redirect(url_for('login'))
 
   else:
-    return render_template('profile.html',
+    return render_template('user.html',
 		user = user)	
 		
 @app.route('/edit-profile', methods=['GET', 'POST'])

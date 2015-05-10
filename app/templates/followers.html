@@ -1,6 +1,7 @@
-{% extends "base.html" %}
+{#   {% extends "base.html" %}   #} 
+{% import "_macros.html" as macros %}
 
-{% block title %}Flasky - {{ title }} {{ user.user_namename }}{% endblock %}
+{% block title %}Tourini - {{ title }} {{ user.user_name }}{% endblock %}
 
 {% block page_content %}
 <div class="jumbo">
@@ -15,6 +16,7 @@
     <tr>
         <td>
             <a href="{{ url_for('.user', user_name = follow.user.user_name) }}">
+
                 {{ follow.user.user_name }}
             </a>
         </td>
