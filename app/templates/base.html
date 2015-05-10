@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
   <head>
     <link href="{{ url_for('static', filename='css/shift.css') }}" rel="stylesheet">
@@ -51,3 +52,7 @@
 	
   </body>
 </html>
+
+{% block scripts %}
+{{ moment.include_moment() }}
+{% endblock %}
