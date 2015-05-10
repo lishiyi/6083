@@ -20,6 +20,7 @@ class Comment(db.Model):
 	disabled = db.Column(db.Boolean)
 	author_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
 	post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+	######
 	
 	@staticmethod
 	def on_changed_body(target, value, oldvalue, initiator):
@@ -28,7 +29,26 @@ class Comment(db.Model):
 		target.body_html = bleach.linkify(bleach.clean(
 			markdown(value, output_format='html'),
 			tags=allowed_tags, strip=True))
-	
+
+	def to_json(self):
+		json_comment = {
+			'url': url_for('api.get_comment', id=self.id, _external=True),
+			'post': url_for('api.get_post', id=self.post_id, _external=True),
+			'body': self.body,
+			'body_html': self.body_html,
+			'timestamp': self.timestamp,
+			'author': url_for('api.get_user', id=self.author_id,
+							  _external=True),
+		}
+		return json_comment
+
+	@staticmethod
+	def from_json(json_comment):
+		body = json_comment.get('body')
+		if body is None or body == '':
+			raise ValidationError('comment does not have a body')
+		return Comment(body=body)
+		
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
 
@@ -39,9 +59,27 @@ class Post(db.Model):
 	timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 	user_name = db.Column(db.String(45))
 	url = db.Column(db.String(45))
-	#comments = db.relationship('Comment', backref='post', lazy='dynamic')
+	###
+	body_html = db.Column(db.Text)
+	author_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
 	
+	comments = db.relationship('Comment', backref='post', lazy='dynamic')
 	
+	##############
+	@staticmethod
+	def generate_fake(count=100):
+		from random import seed, randint
+		import forgery_py
+
+		seed()
+		user_count = User.query.count()
+		for i in range(count):
+			u = User.query.offset(randint(0, user_count - 1)).first()
+			p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 5)),
+					 timestamp=forgery_py.date.date(True),
+					 author=u)
+			db.session.add(p)
+			db.session.commit()
 	
 	@staticmethod
 	def on_changed_body(target, value, oldvalue, initiator):
@@ -52,6 +90,27 @@ class Post(db.Model):
 			markdown(value, output_format='html'),
 			tags=allowed_tags, strip=True))
 			
+	def to_json(self):
+		json_post = {
+			'url': url_for('api.get_post', id=self.id, _external=True),
+			'body': self.body,
+			'body_html': self.body_html,
+			'timestamp': self.timestamp,
+			'author': url_for('api.get_user', id=self.author_id,
+							  _external=True),
+			'comments': url_for('api.get_post_comments', id=self.id,
+							    _external=True),
+			'comment_count': self.comments.count()
+		}
+		return json_post
+
+	@staticmethod
+	def from_json(json_post):
+		body = json_post.get('body')
+		if body is None or body == '':
+			raise ValidationError('post does not have a body')
+		return Post(body=body)
+
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 
 class Follow(db.Model):
@@ -71,8 +130,9 @@ class User(db.Model):
 	location = db.Column(db.String(45))
 	name = db.Column(db.String(45))
 	about_me = db.Column(db.Text())
+	###
+	posts = db.relationship('Post', backref='author', lazy='dynamic')
 	
-	#posts = db.relationship('Post', backref='author', lazy='dynamic')
 	followed = db.relationship('Follow',
 								foreign_keys=[Follow.follower_id],
 								backref=db.backref('follower', lazy='joined'),
@@ -83,7 +143,8 @@ class User(db.Model):
 								backref=db.backref('followed', lazy='joined'),
 								lazy='dynamic',
 								cascade='all, delete-orphan')
-	#comments = db.relationship('Comment', backref='author', lazy='dynamic')
+	###
+	comments = db.relationship('Comment', backref='author', lazy='dynamic')
 	
 	def __init__(self, user_name, password, location, name, about_me):
 		
@@ -133,3 +194,8 @@ class User(db.Model):
 	def is_followed_by(self, user):
 		return self.followers.filter_by(
 			follower_id = user.user_id).first() is not None
+			
+	@property
+	def followed_posts(self):
+		return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
+				.filter(Follow.follower_id == self.user_id)

@@ -1,5 +1,5 @@
 import os
-from flask import render_template, flash, redirect, session, url_for, request, g, send_from_directory
+from flask import render_template, flash, redirect, session, url_for, request, g, send_from_directory, make_response
 from flask.ext.login import login_user, logout_user, current_user, login_required, current_app
 from app import app, db, lm
 from forms import LoginForm, SignupForm, EditProfileForm, PostForm, CommentForm
@@ -18,12 +18,30 @@ app.config['MYSQL_DATABASE_DB'] = 'tourini2'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
-app.config['FLASKY_FOLLOWERS_PER_PAGE'] = 20
-app.config['FLASKY_COMMENTS_PER_PAGE'] = 20
+app.config['FLASKY_POSTS_PER_PAGE'] = 3
+app.config['FLASKY_FOLLOWERS_PER_PAGE'] = 10
+app.config['FLASKY_COMMENTS_PER_PAGE'] = 10
 # This is the path to the upload directory
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg', 'gif'])
+
+
+@app.route('/all')
+@login_required
+def show_all():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '', max_age=30*24*60*60)
+    return resp
+
+
+@app.route('/followed')
+@login_required
+def show_followed():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    return resp
+
 
 @app.route('/moderate')
 @login_required
@@ -168,12 +186,13 @@ def upload():
 	if  form.validate_on_submit():
 		post = Post(body = form.body.data, 
 					user_name= current_user.user_name, 
+					author=current_user._get_current_object(),
 					url = app.config['UPLOAD_FOLDER'] + current_user.user_name + '/'+ filename)
 		db.session.add(post)
 		db.session.commit()
 		return redirect(url_for('.index'))
 								
-'''
+
 		return redirect(url_for('uploaded_file',
                                 filename=filename))
 # This route is expecting a parameter containing the name
@@ -182,10 +201,10 @@ def upload():
 # an image, that image is going to be show after the upload
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory('uploads/',
-                               filename)
-'''
-		   
+	#return 'C:/Users/Administrator/Documents/GitHub/6083/uploads/'+filename
+	return send_from_directory('C:/Users/Administrator/Documents/GitHub/6083/uploads/',filename)
+			
+	
 #Test the connection of MySQL
 @app.route('/testdb')
 def testdb():
@@ -327,8 +346,21 @@ def before_request():
 def index():
 	user = g.user
 	form = PostForm()
-	posts = Post.query.order_by(Post.timestamp.desc()).all()
-	return render_template('index.html', title = 'Home', form = form, user = user, posts=posts)
+	
+	page = request.args.get('page', 1, type=int)
+	show_followed = False
+	if current_user.is_authenticated():
+		show_followed = bool(request.cookies.get('show_followed', ''))
+	if show_followed:
+		query = current_user.followed_posts
+	else:
+		query = Post.query
+	pagination = query.order_by(Post.timestamp.desc()).paginate(
+		page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'],
+		error_out=False)
+	posts = pagination.items
+	return render_template('index.html', title = 'Home', form = form, user = user, posts=posts,
+							show_followed=show_followed, pagination=pagination)
 
 	
 	

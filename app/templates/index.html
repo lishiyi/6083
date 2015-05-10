@@ -26,8 +26,42 @@
 </form>
 {% endif %}
 
+<div class="post-tabs">
+    <ul class="nav nav-tabs">
+        <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_all') }}">All</a></li>
+        {% if current_user.is_authenticated() %}
+        <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_followed') }}">Followers</a></li>
+        {% endif %}
+    </ul>
+    {% include '_posts.html' %}
+</div>
 
-{% for post in posts %}
-<div><p>{{post.user_name}} says: <b>{{post.body}}</b></p></div>
-{% endfor %}
+{% if pagination %}
+<div class="pagination">
+    {{ macros.pagination_widget(pagination, '.index') }}
+</div>
+{% endif %}
 {% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+
+{#
+{% for post in posts %}
+<div><p><a href="{{ url_for('.user', user_name = post.user_name) }}">
+			{{post.user_name}} 
+		</a>says: 
+		<b>{{post.body}}</b></p></div>
+{% endfor %}
+
+<table>
+    <tr valign="top">
+        <td><img src= {{post.url}} ></td>
+		<td><i><a href="{{ url_for('.user', user_name = post.user_name) }}">
+				{{post.user_name}}
+				</a>says:
+		</i><br>{{post.body}}</td>
+    </tr>
+</table>
+#}
