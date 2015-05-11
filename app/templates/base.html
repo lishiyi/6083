@@ -22,6 +22,11 @@
           <li><a href="{{ url_for('about') }}">About</a></li>
           <li><a href="{{ url_for('contact') }}">Contact</a></li>
         </ul>
+		
+		{% if g.user.is_authenticated() %}
+		| <form style="display: inline;" action="{{url_for('search')}}" method="post" name="search">{{g.search_form.hidden_tag()}}{{g.search_form.search(size=20)}}<input type="submit" value="Search"></form>
+		{% endif %}
+		
 		<ul class="pull-right">
 		  {% if 'user_name' in session %}
           <li><a href="{{ url_for('profile') }}">Profile</a></li>

@@ -1,8 +1,9 @@
-from app import db
+from app import db, app
 from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 import bleach
 from markdown import markdown
+import flask.ext.whooshalchemy as whooshalchemy
 
 db = SQLAlchemy()
 #from hashlib import md5
@@ -53,6 +54,8 @@ db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
 
 class Post(db.Model):
+	__searchable__ = ['body']
+	
 	__tablename__ = 'posts'
 	id = db.Column(db.Integer, primary_key=True)
 	body = db.Column(db.Text)
@@ -110,6 +113,11 @@ class Post(db.Model):
 		if body is None or body == '':
 			raise ValidationError('post does not have a body')
 		return Post(body=body)
+	
+	def __repr__(self):
+		return '<Post %r>' % (self.body)
+
+whooshalchemy.whoosh_index(app, Post)
 
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 

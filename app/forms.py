@@ -1,8 +1,11 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, validators, TextAreaField, FileField
+from wtforms import TextField, StringField, PasswordField, BooleanField, SubmitField, validators, TextAreaField, FileField
 from wtforms.validators import Required, Email
 
 from models import db, User
+
+class SearchForm(Form):
+    search = TextField('search', validators = [Required()])
 
 class CommentForm(Form):
 	body = StringField('', validators=[Required()])

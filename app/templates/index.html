@@ -14,6 +14,10 @@
 
 {% if session['user_name'] %}
 <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
+	{{ wtf.quick_form(form) }}
+</form>
+
+{#
     {{ form.hidden_tag() }}
 	
 	{{ form.file.label }}
@@ -23,7 +27,8 @@
     {{ form.body }}
      
     {{ form.submit }}
-</form>
+#}
+
 {% endif %}
 
 <div class="post-tabs">

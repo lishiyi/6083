@@ -2,9 +2,10 @@ import os
 from flask import render_template, flash, redirect, session, url_for, request, g, send_from_directory, make_response
 from flask.ext.login import login_user, logout_user, current_user, login_required, current_app
 from app import app, db, lm
-from forms import LoginForm, SignupForm, EditProfileForm, PostForm, CommentForm
+from forms import LoginForm, SignupForm, EditProfileForm, PostForm, CommentForm, SearchForm
 from models import Comment, Post, Follow, User, ROLE_USER, ROLE_ADMIN, db
 from werkzeug import secure_filename
+from config import MAX_SEARCH_RESULTS
 ######ADDED########################################
 from flaskext.mysql import MySQL
 import requests
@@ -97,7 +98,7 @@ def post(id):
 		page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'],
 		error_out=False)
 	comments = pagination.items
-	return render_template('post.html', posts=[post], form=form,
+	return render_template('post.html', posts=[post], form =form,
 							comments=comments, pagination=pagination)
 
 
@@ -201,9 +202,11 @@ def upload():
 # an image, that image is going to be show after the upload
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
+	url = 'C:/Users/Administrator/Documents/GitHub/6083/uploads'
 	#return 'C:/Users/Administrator/Documents/GitHub/6083/uploads/'+filename
-	return send_from_directory('C:/Users/Administrator/Documents/GitHub/6083/uploads/',filename)
-			
+	#return send_from_directory('C:/Users/Administrator/Documents/GitHub/6083/uploads/',filename)
+	return 	'{url}/{filename}'.format(url=url, filename = filename)
+	
 	
 #Test the connection of MySQL
 @app.route('/testdb')
@@ -337,8 +340,28 @@ def edit_profile():
 ###############################	
 @app.before_request
 def before_request():
-    g.user = current_user
+	g.user = current_user
+	if g.user.is_authenticated():
+		db.session.add(g.user)
+		db.session.commit()
+		g.search_form = SearchForm()
+
 		
+@app.route('/search', methods = ['POST'])
+@login_required
+def search():
+	if not g.search_form.validate_on_submit():
+		return redirect(url_for('index'))
+	return redirect(url_for('search_results', query = g.search_form.search.data))
+	
+@app.route('/search_results/<query>')
+@login_required
+def search_results(query):
+	form = CommentForm()
+	results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+	return render_template('search_results.html',
+							query = query, form = form, posts = results, 
+							results = results)
 ############################################################################		
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])

@@ -1,10 +1,15 @@
 {% extends "base.html" %}
- 
+{% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
   <div class="jumbo">
 	  <h1>Edit Profile</h1>
 	  <hr>
 	  <form action="{{ url_for('edit_profile') }}" method=post>
+		{{ wtf.quick_form(form) }}
+	  </form>
+	  
+	  
+{#
 		{{ form.hidden_tag() }}
 		 
 		{{ form.name.label }}
@@ -17,7 +22,7 @@
 		{{ form.about_me }}
 		
 		{{ form.submit }}
-	  </form>
+#}
    </div>
 {% endblock %}
 
