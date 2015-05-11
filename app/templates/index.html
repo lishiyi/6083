@@ -4,13 +4,13 @@
 {% block content %}
 
 {% if session['user_name'] %}
-<h1>Welcome to Tourini!</h1>
-<h3>Hi {{ session['user_name'] }}!</h3>
+<p>Hi {{ session['user_name'] }}!</p>
+
 {% else %}
 <h1>Welcome to Tourini!</h1>
 <h3>Join us for fun~~</h3>
-{% endif %}
 <hr>
+{% endif %}
 
 {% if session['user_name'] %}
 <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data">
