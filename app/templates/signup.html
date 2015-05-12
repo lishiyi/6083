@@ -11,7 +11,7 @@
     <div class="flash">{{ message }}</div>
   {% endfor %}
    
-  <form action="{{ url_for('signup') }}" method=post>
+  <form class=fff action="{{ url_for('signup') }}" method=post>
     {{ wtf.quick_form(form) }}
   </form>
      

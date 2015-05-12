@@ -64,7 +64,10 @@ form input#password {
 }
 
 
-
+form.fff {
+  font-size: 15px;
+  color: yellow;
+}
 
 
 
