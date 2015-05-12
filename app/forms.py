@@ -14,6 +14,7 @@ class CommentForm(Form):
 class PostForm(Form):
 	file = FileField('Image File')
 	body = TextAreaField("What's on your mind?", validators=[Required()])
+	location = StringField('location')
 	submit = SubmitField('Submit')
 
 class LoginForm(Form):

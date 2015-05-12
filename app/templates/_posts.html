@@ -17,6 +17,11 @@
                 {% else %}
                     {{ post.body }}
                 {% endif %}
+				{% if post.location %}
+					At <a href="http://maps.google.com/?q={{ post.location }}">
+				{{ post.location }}
+			</a>
+		{% endif %}
             </div>
             <div class="post-footer">
                 <a href="{{ url_for('.post', id=post.id) }}">

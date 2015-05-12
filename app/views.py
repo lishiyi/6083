@@ -188,7 +188,8 @@ def upload():
 		post = Post(body = form.body.data, 
 					user_name= current_user.user_name, 
 					author=current_user._get_current_object(),
-					url = app.config['UPLOAD_FOLDER'] + current_user.user_name + '/'+ filename)
+					url = app.config['UPLOAD_FOLDER'] + current_user.user_name + '/'+ filename,
+					location = form.location.data)
 		db.session.add(post)
 		db.session.commit()
 		return redirect(url_for('.index'))

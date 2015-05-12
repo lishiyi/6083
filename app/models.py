@@ -62,6 +62,7 @@ class Post(db.Model):
 	timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 	user_name = db.Column(db.String(45))
 	url = db.Column(db.String(45))
+	location = db.Column(db.String(45))
 	###
 	body_html = db.Column(db.Text)
 	author_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))

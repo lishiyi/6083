@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50623
 File Encoding         : 65001
 
-Date: 2015-05-10 15:40:50
+Date: 2015-05-11 21:06:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -33,12 +33,13 @@ CREATE TABLE `comments` (
   KEY `timestamp` (`timestamp`),
   CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`),
   CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of comments
 -- ----------------------------
 INSERT INTO `comments` VALUES ('1', 'nice', 'nice', '2015-05-10 19:09:15', null, '2', '3');
+INSERT INTO `comments` VALUES ('2', 'nice', 'nice', '2015-05-11 00:46:17', null, '6', '14');
 
 -- ----------------------------
 -- Table structure for follows
@@ -76,24 +77,28 @@ CREATE TABLE `posts` (
   `url` varchar(255) DEFAULT NULL,
   `body_html` text,
   `author_id` int(11) DEFAULT NULL,
+  `location` varchar(45) DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `author_id` (`author_id`),
   CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of posts
 -- ----------------------------
-INSERT INTO `posts` VALUES ('1', 'I am happy', '2015-05-08 02:29:43', 'lina222', null, null, '2');
-INSERT INTO `posts` VALUES ('2', 'yeeeeeel', '2015-05-08 20:48:32', 'lina222', null, null, '2');
-INSERT INTO `posts` VALUES ('3', 'sadadad', '2015-05-08 21:03:25', 'lina222', null, null, '2');
-INSERT INTO `posts` VALUES ('4', 'aaaa', '2015-05-08 21:04:36', 'lina222', null, null, '2');
-INSERT INTO `posts` VALUES ('5', 'sssssss', '2015-05-08 22:15:11', 'lina222', null, null, '2');
-INSERT INTO `posts` VALUES ('6', 'asa', '2015-05-08 23:00:08', 'kimi444', null, null, '4');
-INSERT INTO `posts` VALUES ('7', 'imaaaaaa', '2015-05-08 23:01:04', 'kimi444', null, null, '4');
-INSERT INTO `posts` VALUES ('11', '2222', '2015-05-08 23:35:42', 'bibi777', 'uploads/bibi777/2.jpg', null, '7');
-INSERT INTO `posts` VALUES ('12', 'aaaaaaaaaaa', '2015-05-09 18:58:20', 'lina222', 'uploads/lina222/ampl_logo_01.png', null, '2');
-INSERT INTO `posts` VALUES ('13', 'Yes！', '2015-05-10 19:15:22', 'kaka666', 'uploads/kaka666/1.jpg', '<p>Yes！</p>', '6');
+INSERT INTO `posts` VALUES ('1', 'I am happy', '2015-05-08 02:29:43', 'lina222', null, null, '2', '');
+INSERT INTO `posts` VALUES ('2', 'yeeeeeel', '2015-05-08 20:48:32', 'lina222', null, null, '2', '');
+INSERT INTO `posts` VALUES ('3', 'sadadad', '2015-05-08 21:03:25', 'lina222', null, null, '2', '');
+INSERT INTO `posts` VALUES ('4', 'aaaa', '2015-05-08 21:04:36', 'lina222', null, null, '2', '');
+INSERT INTO `posts` VALUES ('5', 'sssssss', '2015-05-08 22:15:11', 'lina222', null, null, '2', '');
+INSERT INTO `posts` VALUES ('6', 'asa', '2015-05-08 23:00:08', 'kimi444', null, null, '4', '');
+INSERT INTO `posts` VALUES ('7', 'imaaaaaa', '2015-05-08 23:01:04', 'kimi444', null, null, '4', '');
+INSERT INTO `posts` VALUES ('11', '2222', '2015-05-08 23:35:42', 'bibi777', 'uploads/bibi777/2.jpg', null, '7', '');
+INSERT INTO `posts` VALUES ('12', 'aaaaaaaaaaa', '2015-05-09 18:58:20', 'lina222', 'uploads/lina222/ampl_logo_01.png', null, '2', '');
+INSERT INTO `posts` VALUES ('13', 'Yes！', '2015-05-10 19:15:22', 'kaka666', 'uploads/kaka666/1.jpg', '<p>Yes！</p>', '6', '');
+INSERT INTO `posts` VALUES ('14', 'My God!', '2015-05-11 00:40:09', 'kaka666', 'uploads/kaka666/3.jpg', '<p>My God!</p>', '6', '');
+INSERT INTO `posts` VALUES ('15', 'Yes!', '2015-05-11 00:57:57', 'dora333', 'uploads/dora333/1.jpg', '<p>Yes!</p>', '3', '');
+INSERT INTO `posts` VALUES ('16', 'I love Java', '2015-05-12 01:04:15', 'lina222', 'uploads/lina222/java.jpg', '<p>I love Java</p>', '2', 'Java, Indonesia');
 
 -- ----------------------------
 -- Table structure for user
